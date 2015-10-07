@@ -16,6 +16,7 @@ set number                  " Muestar numeros de linea
 set showcmd                 " Muestra el ultimo comando abajo a la derecha
 set cursorline              " Resalta la linea actual
 set hidden                  " Puedo cambiar de buffer sin grabar
+set relativenumber          " Para mejorar los saltos con j y k
 
 filetype plugin indent on   " Indenta automaticamente en funcion del filetype
 
@@ -26,6 +27,9 @@ set wildmode=longest:list,full   " feo, pero mas comodo para mi
 set lazyredraw              " solo redibuja cuando hace falta
 
 set showmatch               " muestra parejas de ([{
+
+set ignorecase              " mejor busqueda
+set smartcase
 "}}}
 " Configuracion busquedas {{{
 " ---------------------------------------------------------
@@ -118,7 +122,8 @@ function! RangeChooser()
     redraw!
 endfunction
 command! -bar RangerChooser call RangeChooser()
-nnoremap <leader>r :<C-U>RangerChooser<CR>
+" TODO: decidir vimfiler o ranger
+"nnoremap <leader>r :<C-U>RangerChooser<CR>
 
 " }}}
 
@@ -338,7 +343,66 @@ let g:vimfiler_tree_leaf_icon = ' '
 let g:vimfiler_tree_opened_icon = '▾'
 let g:vimfiler_tree_closed_icon = '▸'
 let g:vimfiler_file_icon = '-'
-let g:vimfiler_marked_file_icon = '*'
+let g:vimfiler_readonly_file_icon = '✗'
+let g:vimfiler_marked_file_icon = '✓'
+
+let g:vimfiler_enabled_auto_cd = 1
+call vimfiler#custom#profile('default','context', { 
+            \ 'safe' : 0,
+            \'auto_cd': 1})
+autocmd FileType vimfiler call s:vimfiler_my_settings()
+
+function! s:vimfiler_my_settings() "{{{
+    call vimfiler#set_execute_file('vim', ['vim', 'notepad'])
+    call vimfiler#set_execute_file('txt', 'vim')
+
+    " Overwrite settings.
+    nnoremap <silent><buffer> - /
+    " Call sendto.
+    " nnoremap <buffer> - <C-u>:Unite sendto<CR>
+    " setlocal cursorline
+
+    nmap <buffer> O <Plug>(vimfiler_sync_with_another_vimfiler)
+    nnoremap <silent><buffer><expr> gy vimfiler#do_action('tabopen')
+    nmap <buffer> p <Plug>(vimfiler_quick_look)
+
+    " Migemo search.
+    if !empty(unite#get_filters('matcher_migemo'))
+        nnoremap <silent><buffer><expr> /  line('$') > 10000 ?  'g/' :
+                    \ ":\<C-u>Unite -buffer-name=search -start-insert line_migemo\<CR>"
+    endif
+endfunction"}}}
+
+function! s:vimfiler_my_shell() "{{{
+
+    let tmp=vimfiler#get_file_directory() 
+    echo tmp
+    sleep 5000m
+    exe 'cd ' tmp
+    exe ':shell'
+
+
+endfunction
+nmap S :<C-u>call s:vimfiler_my_shell()<CR>
+    
+" Change current directory.
+nnoremap aaa :<C-u>call <SID>cd_buffer_dir()<CR>
+function! s:cd_buffer_dir() "{{{
+    let filetype = getbufvar(bufnr('%'), '&filetype')
+    if filetype ==# 'vimfiler'
+        let dir = getbufvar(bufnr('%'), 'vimfiler').current_dir
+    elseif filetype ==# 'vimshell'
+        let dir = getbufvar(bufnr('%'), 'vimshell').save_dir
+    else
+        let dir = isdirectory(bufname('%')) ? bufname('%') : fnamemodify(bufname('%'), ':p:h')
+    endif
+
+    cd `=dir`
+endfunction"}}}
+
+nnoremap <leader>e :<C-U>VimFilerExplorer -buffer-name=explorer<CR>
+autocmd filetype explorer :nnoremap <buffer>- /
+nnoremap - /
 
 " vimwiki
 let g:vimwiki_list = [{'path': '~/Dropbox/Aplicaciones/Minutes/', 'syntax':'markdown','ext':'.txt'}]
