@@ -352,6 +352,20 @@ call vimfiler#custom#profile('default','context', {
             \'auto_cd': 1})
 autocmd FileType vimfiler call s:vimfiler_my_settings()
 
+
+" Abre shell en la carpeta seleccionada en VimFiller
+function! s:vimfiler_michi_shell_in_dir() "{{{
+
+    let vimfile=vimfiler#get_file() 
+    if vimfile.vimfiler__is_directory == 1
+        let newdir=vimfiler#get_filename()
+    else
+        let newdir=fnamemodify(vimfile.action__path,':h')
+    end
+    lcd `=newdir`
+    exe ':shell'
+endfunction
+
 function! s:vimfiler_my_settings() "{{{
     call vimfiler#set_execute_file('vim', ['vim', 'notepad'])
     call vimfiler#set_execute_file('txt', 'vim')
@@ -365,6 +379,7 @@ function! s:vimfiler_my_settings() "{{{
     nmap <buffer> O <Plug>(vimfiler_sync_with_another_vimfiler)
     nnoremap <silent><buffer><expr> gy vimfiler#do_action('tabopen')
     nmap <buffer> p <Plug>(vimfiler_quick_look)
+    nmap <buffer> H :call <SID>vimfiler_michi_shell_in_dir()<cr>
 
     " Migemo search.
     if !empty(unite#get_filters('matcher_migemo'))
@@ -372,18 +387,6 @@ function! s:vimfiler_my_settings() "{{{
                     \ ":\<C-u>Unite -buffer-name=search -start-insert line_migemo\<CR>"
     endif
 endfunction"}}}
-
-function! s:vimfiler_my_shell() "{{{
-
-    let tmp=vimfiler#get_file_directory() 
-    echo tmp
-    sleep 5000m
-    exe 'cd ' tmp
-    exe ':shell'
-
-
-endfunction
-nmap S :<C-u>call s:vimfiler_my_shell()<CR>
     
 " Change current directory.
 nnoremap aaa :<C-u>call <SID>cd_buffer_dir()<CR>
