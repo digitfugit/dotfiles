@@ -82,6 +82,12 @@ noremap <leader>. <Esc>:wall<Enter>:q<Enter>
 imap <leader><leader> <Esc>:w<Enter>
 imap <leader>. <Esc>:wall<Enter>:q<Enter>
 
+ " Cambio rápido entre ventanas {{{
+ nnoremap <C-h> <C-w>h
+ nnoremap <C-j> <C-w>j
+ nnoremap <C-k> <C-w>k
+ nnoremap <C-l> <C-w>l
+ " }}}   
 " ranger como explorador de archivos {{{
 " compatible with ranger 1.4.2 through 1.7.*
 "
@@ -380,6 +386,7 @@ function! s:vimfiler_my_settings() "{{{
     nnoremap <silent><buffer><expr> gy vimfiler#do_action('tabopen')
     nmap <buffer> p <Plug>(vimfiler_quick_look)
     nmap <buffer> H :call <SID>vimfiler_michi_shell_in_dir()<cr>
+    nunmap <buffer> <c-l>
 
     " Migemo search.
     if !empty(unite#get_filters('matcher_migemo'))
