@@ -2,14 +2,15 @@
 "
 " My vimrc
 "
-"
-" Configuracion interface {{{
+" " Configuracion interface {{{
 set nocompatible            " TODO
 
 set tabstop=4               " Tabulacion a 4
 set softtabstop=4
 set softtabstop=4
 set shiftwidth=4
+
+set noswapfile              " Control con git o lo que sea
 
 set expandtab               " Transforma tabs to espacios
 set number                  " Muestar numeros de linea
@@ -18,7 +19,8 @@ set cursorline              " Resalta la linea actual
 set hidden                  " Puedo cambiar de buffer sin grabar
 set relativenumber          " Para mejorar los saltos con j y k
 
-filetype plugin indent on   " Indenta automaticamente en funcion del filetype
+""filetype plugin indent on   " Indenta automaticamente en funcion del filetype
+"filetype off   " Indenta automaticamente en funcion del filetype
 
 set wildmenu                " autocompletado visual para comandos
 set wildmode=longest:list,full   " feo, pero mas comodo para mi
@@ -45,8 +47,22 @@ nnoremap <silent> <Esc><Esc> <Esc>:nohlsearch<CR><Esc>
 "
 set foldlevelstart=10       " Inicialmente abre carpetas hasta 10 niveles
 set foldmethod=marker       " Setea metodo para las folds 
+map ,f :set foldmethod=indent<cr>zM<cr>
+map ,F :set foldmethod=manual<cr>zr<cr>
 "}}}
 " Configuracion movimiento {{{ -------------------------------------------
+
+" El raton algunas veces esta bien
+set mouse=a
+nmap <RightMouse> :set paste<cr>"+gP:set nopaste<cr>
+
+" Scroll mas rapido
+nnoremap J 5j
+nnoremap L 5l
+
+" Cambio de buffers
+nnoremap L :bnext<cr>
+nnoremap H :bprev<cr>
 
 " Mapeo lider y su timeout para anular
 let mapleader=','
@@ -181,7 +197,7 @@ NeoBundleFetch 'Shougo/neobundle.vim'
 " Note: You don't set neobundle setting in .gvimrc!
 
 " Required:
-filetype plugin indent on
+" filetype plugin indent on
 
 " Instalando los plugins por primera vez
 if iCanHazNeoBundle == 0
@@ -198,6 +214,12 @@ endif
 NeoBundle "kien/ctrlp.vim"       "CtrlP - Buscador de ficheros fuzzy
 NeoBundle 'vimwiki/vimwiki'      " Mi wikipedia personal
 NeoBundle 'scrooloose/syntastic' " Syntax checking hacks for vim
+NeoBundle 'Shougo/neocomplete.vim'
+NeoBundle 'majutsushi/tagbar'
+
+NeoBundle 'SirVer/ultisnips'     " Snippets
+NeoBundle 'honza/vim-snippets'     " Snippets
+
 
 NeoBundle 'Shougo/unite.vim'        " La madre de todos los plugins
 " Cosas de unite
@@ -228,6 +250,8 @@ NeoBundleLazy 'joedicastro/vim-github256', { 'autoload' : { 'unite_sources' : 'c
 
 call neobundle#end()
 NeoBundleCheck
+
+filetype plugin indent on
 " }}}
 
 " Mappings y configuracion de plugins {{{
@@ -385,7 +409,9 @@ function! s:vimfiler_my_settings() "{{{
     nmap <buffer> O <Plug>(vimfiler_sync_with_another_vimfiler)
     nnoremap <silent><buffer><expr> gy vimfiler#do_action('tabopen')
     nmap <buffer> p <Plug>(vimfiler_quick_look)
-    nmap <buffer> H :call <SID>vimfiler_michi_shell_in_dir()<cr>
+    nmap <buffer> <LeftRelease> <Plug>(vimfiler_smart_l)
+    "nmap <buffer> H :call <SID>vimfiler_michi_shell_in_dir()<cr>
+
     nunmap <buffer> <c-l>
 
     " Migemo search.
@@ -432,8 +458,93 @@ let g:syntastic_check_on_wq = 0
 " }}}
 
 " Configuracion para php -------------------------{{{
-" TODO supongo que quitar esto.
-"au BufRead,BufNewFile *.php set filetype=php
 
 
-" ------------------------------------------------}}}
+" Disable AutoComplPop.
+let g:acp_enableAtStartup = 0
+" Use neocomplete.
+let g:neocomplete#enable_at_startup = 1
+" Use smartcase.
+let g:neocomplete#enable_smart_case = 1
+" Set minimum syntax keyword length.
+let g:neocomplete#sources#syntax#min_keyword_length = 3
+let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
+
+" Define dictionary.
+let g:neocomplete#sources#dictionary#dictionaries = {
+    \ 'default' : '',
+    \ 'vimshell' : $HOME.'/.vimshell_hist',
+    \ 'scheme' : $HOME.'/.gosh_completions'
+        \ }
+
+" Define keyword.
+if !exists('g:neocomplete#keyword_patterns')
+    let g:neocomplete#keyword_patterns = {}
+endif
+let g:neocomplete#keyword_patterns['default'] = '\h\w*'
+
+" Plugin key-mappings.
+inoremap <expr><C-g>     neocomplete#undo_completion()
+inoremap <expr><C-l>     neocomplete#complete_common_string()
+
+" Recommended key-mappings.
+" <CR>: close popup and save indent.
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function()
+  return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
+  " For no inserting <CR> key.
+  "return pumvisible() ? "\<C-y>" : "\<CR>"
+endfunction
+" <TAB>: completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+" <C-h>, <BS>: close popup and delete backword char.
+inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
+inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+" Close popup by <Space>.
+"inoremap <expr><Space> pumvisible() ? "\<C-y>" : "\<Space>"
+
+" AutoComplPop like behavior.
+"let g:neocomplete#enable_auto_select = 1
+
+" Shell like behavior(not recommended).
+"set completeopt+=longest
+"let g:neocomplete#enable_auto_select = 1
+"let g:neocomplete#disable_auto_complete = 1
+"inoremap <expr><TAB>  pumvisible() ? "\<Down>" : "\<C-x>\<C-u>"
+
+" Enable omni completion.
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+
+" Enable heavy omni completion.
+if !exists('g:neocomplete#sources#omni#input_patterns')
+  let g:neocomplete#sources#omni#input_patterns = {}
+endif
+let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+"let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
+"let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
+
+" For perlomni.vim setting.
+" https://github.com/c9s/perlomni.vim
+let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
+
+" tagbar {{{
+" Abre la ventana de tag y vuelve al codigo (para poder volver con c-o
+"nmap <cr> :tag <c-r><c-w><cr>:TagbarOpen<cr><c-h>
+nmap <cr> :tag <c-r><c-w><cr>:TagbarOpen<cr>
+let g:tagbar_autoclose=1
+
+" Ultisnips {{{
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<c-e>"
+let g:UltiSnipsListSnippets="<leader>s"
+let g:UltiSnipsJumpForwardTrigger="<c-f>"
+let g:UltiSnipsJumpBackwardTrigger="<c-b>"
+
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
+
+nmap <F5> :w<cr>:silent !xvkbd -window Firefox -text '\Cr\A\t'<cr>:redraw!<cr>
