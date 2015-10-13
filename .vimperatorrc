@@ -1,0 +1,25 @@
+" mappings {{{1
+" clear all key mappings
+" to avoid troubles from loading rc file several times
+mapclear
+cmapclear
+imapclear
+
+" Pestanas con L-H, como mi vim
+nnoremap J 5j
+nnoremap K 5k
+nnoremap L gt
+nnoremap H gT
+
+" Mappings varios
+nnoremap ñ :
+nnoremap '-' /
+
+
+set hintmatching=contains
+
+" need <CR> anytime in hints mode
+set followhints=1
+
+" don't select trailing spaces, when select words.
+set! layout.word_select.eat_space_to_next_word=false
