@@ -216,6 +216,7 @@ NeoBundle 'vimwiki/vimwiki'      " Mi wikipedia personal
 NeoBundle 'scrooloose/syntastic' " Syntax checking hacks for vim
 NeoBundle 'Shougo/neocomplete.vim'
 NeoBundle 'majutsushi/tagbar'
+NeoBundle 'bling/vim-airline'
 
 NeoBundle 'SirVer/ultisnips'     " Snippets
 NeoBundle 'honza/vim-snippets'     " Snippets
@@ -456,6 +457,22 @@ let g:syntastic_check_on_wq = 0
 
 
 " }}}
+
+" Airline ---------------------------{{{
+
+set laststatus=2
+"if !exists('g:airline_symbols')
+"let g:airline_symbols = {}
+"endif
+let g:airline_powerline_fonts=1
+let g:airline#extensions#tabline#enabled=1
+let g:airline#extensions#tabline#buffer_min_count = 2
+
+let g:airline#extensions#tabline#left_sep = ' '
+"let g:airline_theme='serene'
+let g:airline_theme='zenburn'
+" ---------------------------------------------------------}}}
+
 
 " Configuracion para php -------------------------{{{
 
