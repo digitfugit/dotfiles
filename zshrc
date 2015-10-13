@@ -49,7 +49,7 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zaw)
+plugins=(git zaw tmuxinator)
 
 # User configuration
 
@@ -100,3 +100,4 @@ zstyle ':filter-select' max-lines 3
 zstyle ':filter-select' case-insensitive yes # enable case-insensitive 
 zstyle ':filter-select' extended-search yes # see below
 
+export EDITOR='vim'
