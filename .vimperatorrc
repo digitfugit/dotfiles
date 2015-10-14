@@ -15,6 +15,10 @@ nnoremap H gT
 nnoremap ñ :
 nnoremap '-' /
 
+" Moverse por pestanas
+
+nnoremap H gT
+nnoremap L gt
 
 set hintmatching=contains
 
