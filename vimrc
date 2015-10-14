@@ -217,6 +217,7 @@ NeoBundle 'scrooloose/syntastic' " Syntax checking hacks for vim
 NeoBundle 'Shougo/neocomplete.vim'
 NeoBundle 'majutsushi/tagbar'
 NeoBundle 'bling/vim-airline'
+NeoBundle 'christoomey/vim-tmux-navigator'
 
 NeoBundle 'SirVer/ultisnips'     " Snippets
 NeoBundle 'honza/vim-snippets'     " Snippets
